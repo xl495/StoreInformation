@@ -1,6 +1,6 @@
 import { Strategy, IStrategyOptions } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import { BadRequestException, Inject } from '@nestjs/common';
+import { BadRequestException, Inject, Request } from '@nestjs/common';
 import { User } from '@app/db/schemas/user.schemas';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { compareSync } from 'bcryptjs';
@@ -15,7 +15,7 @@ export class LocalStrateggy extends PassportStrategy(Strategy, 'local') {
     } as IStrategyOptions);
   }
 
-  async validate(username: string, password: string) {
+  async validate(@Request() req, username: string, password: string) {
     const user = await this.userModel
       .findOne({
         username,

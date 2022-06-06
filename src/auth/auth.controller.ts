@@ -6,6 +6,8 @@ import {
   Get,
   Inject,
   Post,
+  Req,
+  Session,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -16,6 +18,7 @@ import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
 import { CurrentUser } from './current-user.decorator';
 import { ConfigService } from '@nestjs/config';
+import { CaptchaService } from './captcha.service';
 
 export type UserDocument = DocumentType<User>;
 
@@ -25,6 +28,7 @@ export class AuthController {
   constructor(
     private configService: ConfigService,
     private jwtService: JwtService,
+    private captcha: CaptchaService,
     @Inject(User.name) private readonly userModel: ReturnModelType<typeof User>,
   ) {}
   @Post('register')
@@ -44,6 +48,16 @@ export class AuthController {
       password,
     });
     return user;
+  }
+
+  @Get('code')
+  @ApiOperation({
+    summary: '获取验证码',
+  })
+  async getAuthCode(@Req() req) {
+    const svgData = await this.captcha.getCaptche();
+    req.session.code = svgData.text;
+    return svgData.data;
   }
 
   @Post('login')

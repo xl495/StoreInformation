@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as session from 'express-session';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -14,6 +15,14 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-dosc', app, document);
   app.useGlobalPipes(new ValidationPipe());
+  app.use(
+    session({
+      secret: 'asldjh!@#',
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: true },
+    }),
+  );
   console.log('apidoc - http://localhost:9000/api-dosc');
   await app.listen(9000);
 }
