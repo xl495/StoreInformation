@@ -2,8 +2,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as session from 'express-session';
+import * as passport from 'passport';
 import { AppModule } from './app.module';
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
@@ -19,10 +19,11 @@ async function bootstrap() {
     session({
       secret: 'asldjh!@#',
       resave: false,
-      saveUninitialized: true,
-      cookie: { secure: true },
+      saveUninitialized: false,
     }),
   );
+  app.use(passport.initialize());
+  app.use(passport.session());
   console.log('apidoc - http://localhost:9000/api-dosc');
   await app.listen(9000);
 }

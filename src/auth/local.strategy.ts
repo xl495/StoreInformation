@@ -1,6 +1,6 @@
 import { Strategy, IStrategyOptions } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import { BadRequestException, Inject, Request } from '@nestjs/common';
+import { BadRequestException, Inject, Req } from '@nestjs/common';
 import { User } from '@app/db/schemas/user.schemas';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { compareSync } from 'bcryptjs';
@@ -12,21 +12,38 @@ export class LocalStrateggy extends PassportStrategy(Strategy, 'local') {
     super({
       usernameField: 'username',
       passwordField: 'password',
-    } as IStrategyOptions);
+      session: true,
+      passReqToCallback: true,
+    });
   }
 
-  async validate(@Request() req, username: string, password: string) {
+  async validate(@Req() req, username: string, password: string) {
+    const { body = { code: 'bodyCode' }, session = { code: 'sessionCode' } } =
+      req;
+
+    // 不验证大小写
+    if (
+      (body.code && String(body.code).toLocaleUpperCase()) !==
+      (session.code && String(session.code).toLocaleUpperCase())
+    ) {
+      throw new BadRequestException('验证码错误!');
+    }
+
     const user = await this.userModel
       .findOne({
         username,
       })
       .select('+password');
+
     if (!user) {
       throw new BadRequestException('用户名不正确!');
     }
     if (!compareSync(password, user.password)) {
       throw new BadRequestException('密码不正确!');
     }
+
+    // 验证通过 清除 session
+    req.session.code = null;
 
     return user;
   }

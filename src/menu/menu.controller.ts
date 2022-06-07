@@ -3,8 +3,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -13,10 +15,6 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { AddMenuDto } from './dto/menu.dto';
 
-export type MenuItemDto = {
-  children?: Menu[];
-} & Menu;
-
 @Controller('menu')
 @ApiTags('菜单')
 export class MenuController {
@@ -24,33 +22,30 @@ export class MenuController {
     @Inject(Menu.name) private readonly menuModel: ReturnModelType<typeof Menu>,
   ) {}
   @Get()
-  // @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
     description: '获取路由列表',
   })
-  // @ApiBearerAuth()
+  @ApiBearerAuth()
   async getList() {
     const menu = await this.menuModel.find();
-    const menus = [];
     menu.forEach((item) => {
-      menus.push({
-        ...item,
-        chindren: [],
+      menu.map((menuItem) => {
+        if (String(menuItem.parent_id) === String(item._id)) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          if (!item._doc.children) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            item._doc.children = [];
+          }
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          item._doc.children.push(menuItem);
+        }
       });
     });
-
-    // const resMenu = menus.map((item) => {
-    //   menu.map((menuItem) => {
-    //     if (String(menuItem.parent_id) === String(item._id)) {
-    //       item.children.push(menuItem);
-    //     }
-    //   });
-    //   return item;
-    // });
-
-    // console.log(menus);
-
-    return menus;
+    return menu;
   }
 
   @Post()
@@ -72,14 +67,16 @@ export class MenuController {
       parent_id = '',
     } = dto;
 
-    const isFindMenu = await this.menuModel.findOne({
+    const isFindMenuName = await this.menuModel.findOne({
       name,
     });
+    const isFindMenuTitle = await this.menuModel.findOne({
+      title,
+    });
 
-    if (isFindMenu) {
+    if (isFindMenuName || isFindMenuTitle) {
       throw new BadRequestException('该组件名称已存在!');
     }
-
     const menuData = await this.menuModel.create({
       parent_id,
       path,
@@ -94,5 +91,20 @@ export class MenuController {
       },
     });
     return menuData;
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  async remove(@Param('id') id: string) {
+    const menu = await this.menuModel.findById(id);
+    if (!menu) {
+      throw new BadRequestException('该菜单不存在!');
+    }
+    await this.menuModel.findByIdAndRemove(id);
+    return {
+      code: 0,
+      message: '删除成功',
+    };
   }
 }

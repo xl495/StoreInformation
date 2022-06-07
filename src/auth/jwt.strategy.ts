@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Inject } from '@nestjs/common';
+import { Inject, Request } from '@nestjs/common';
 import { User } from '@app/db/schemas/user.schemas';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { ConfigService } from '@nestjs/config';
