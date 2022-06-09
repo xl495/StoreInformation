@@ -54,10 +54,12 @@ export class AuthController {
   @ApiOperation({
     summary: '获取验证码',
   })
-  async getAuthCode(@Req() req) {
+  async getAuthCode(@Session() session) {
     const svgData = await this.captcha.getCaptche();
-    req.session.code = svgData.text;
-    return svgData.data;
+    session.code = svgData.text;
+    return {
+      data: svgData.data,
+    };
   }
 
   @Post('login')

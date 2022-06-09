@@ -8,6 +8,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { MenuModule } from './menu/menu.module';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Global()
 @Module({
@@ -29,11 +31,21 @@ import { MenuModule } from './menu/menu.module';
     }),
     DbModule.forRoot('MONGO_URI'),
     DbModule.forFeature([User, Menu]),
+    ThrottlerModule.forRoot({
+      ttl: 60, // 1分钟
+      limit: 50, // 限制请求10次
+    }),
     AuthModule,
     MenuModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
   exports: [JwtModule],
 })
 export class AppModule {}
