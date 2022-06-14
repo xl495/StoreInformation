@@ -31,20 +31,20 @@ import { APP_GUARD } from '@nestjs/core';
     }),
     DbModule.forRoot('MONGO_URI'),
     DbModule.forFeature([User, Menu]),
-    ThrottlerModule.forRoot({
-      ttl: 60, // 1分钟
-      limit: 50, // 限制请求10次
-    }),
+    // ThrottlerModule.forRoot({
+    //   ttl: 60, // 1分钟
+    //   limit: 50, // 限制请求10次
+    // }),
     AuthModule,
     MenuModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
   exports: [JwtModule],
 })

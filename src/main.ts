@@ -15,7 +15,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-dosc', app, document);
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
+  app.enableCors({
+    origin: ['http://localhost:9000', 'http://localhost:3000'],
+    credentials: true,
+  });
   app.use(
     session({
       secret: 'asldjh!@#',
