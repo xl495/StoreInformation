@@ -43,10 +43,10 @@ import { ShopCategory } from '@app/db/schemas/shop-category.schemas';
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
   exports: [JwtModule],
 })

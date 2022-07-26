@@ -18,6 +18,8 @@ export class LocalStrateggy extends PassportStrategy(Strategy, 'local') {
   }
 
   async validate(@Req() req, username: string, password: string) {
+    console.log(req);
+
     const { body = { code: 'bodyCode' }, session = { code: 'sessionCode' } } =
       req;
 
@@ -46,7 +48,7 @@ export class LocalStrateggy extends PassportStrategy(Strategy, 'local') {
     }
 
     // 验证通过 清除 session
-    req.session.code = null;
+    // req.session.code = null;
 
     return user;
   }
