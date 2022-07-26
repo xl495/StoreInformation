@@ -1,4 +1,4 @@
-import { Strategy, IStrategyOptions } from 'passport-local';
+import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { BadRequestException, Inject, Req } from '@nestjs/common';
 import { User } from '@app/db/schemas/user.schemas';
@@ -20,6 +20,9 @@ export class LocalStrateggy extends PassportStrategy(Strategy, 'local') {
   async validate(@Req() req, username: string, password: string) {
     const { body = { code: 'bodyCode' }, session = { code: 'sessionCode' } } =
       req;
+
+    // 验证码白名单 sessionCode
+    if (session.code === undefined) session.code = 'sessionCode';
 
     // 不验证大小写
     if (
