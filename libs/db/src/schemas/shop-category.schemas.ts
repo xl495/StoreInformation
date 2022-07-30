@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Prop } from '@typegoose/typegoose';
+import { Prop, Ref } from '@typegoose/typegoose';
 
 export class ShopCategory {
   @Prop()
@@ -8,4 +8,9 @@ export class ShopCategory {
     example: '红米1',
   })
   name: string;
+  @Prop({ ref: () => ShopCategory, type: () => String })
+  @ApiProperty({
+    description: '父级Id',
+  })
+  public parentId?: Ref<ShopCategory, string>;
 }

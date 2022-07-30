@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 import { ObjectId } from 'mongoose';
 
-export class AddCategoryDto {
+export class EditCategoryDto {
   @ApiProperty({
     enum: ['名称'],
   })
@@ -11,7 +11,7 @@ export class AddCategoryDto {
   @MaxLength(10)
   name: string;
   @ApiProperty({
-    required: false,
+    required: true,
   })
-  parentId?: ObjectId;
+  id!: ObjectId;
 }
