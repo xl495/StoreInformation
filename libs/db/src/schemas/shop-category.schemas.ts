@@ -4,7 +4,7 @@ import { Prop, Ref } from '@typegoose/typegoose';
 export class ShopCategory {
   @Prop()
   @ApiProperty({
-    description: '商品名称',
+    description: '商品分类名称',
     example: '红米1',
   })
   name: string;

@@ -10,6 +10,9 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ShopCategoryModule } from './shop-category/shop-category.module';
 import { ShopCategory } from '@app/db/schemas/shop-category.schemas';
+import { ShopProductModule } from './shop-product/shop-product.module';
+import { ShopProduct } from '@app/db/schemas/shop-product.schemas';
+import { ShopProductSku } from '@app/db/schemas/shtop-product-sku.schemas';
 
 @Global()
 @Module({
@@ -32,13 +35,14 @@ import { ShopCategory } from '@app/db/schemas/shop-category.schemas';
     // 连接数据库
     DbModule.forRoot('MONGO_URI'),
 
-    DbModule.forFeature([User, ShopCategory]),
+    DbModule.forFeature([User, ShopCategory, ShopProduct, ShopProductSku]),
     ThrottlerModule.forRoot({
       ttl: 60, // 1分钟
       limit: 50, // 限制请求10次
     }),
     AuthModule,
     ShopCategoryModule,
+    ShopProductModule,
   ],
   controllers: [AppController],
   providers: [
