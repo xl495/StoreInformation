@@ -1,4 +1,4 @@
-import { Prop } from '@nestjs/mongoose';
+import { Prop } from '@typegoose/typegoose';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ShopProductSku {

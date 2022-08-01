@@ -1,7 +1,7 @@
 import { ShopProduct } from '@app/db/schemas/shop-product.schemas';
 import { Inject, Injectable } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
-import { AddProductSkuDto } from './dto/add-product.dto';
+import { AddProductDto } from './dto/add-product.dto';
 
 @Injectable()
 export class ShopProductService {
@@ -10,19 +10,19 @@ export class ShopProductService {
     private readonly productModel: ReturnModelType<typeof ShopProduct>,
   ) {}
 
-  async getDetail() {
-    return this.productModel.find();
+  async getDetail(id: string) {
+    return this.productModel.findById(id);
   }
 
-  async add(product: AddProductSkuDto) {
+  async add(product: AddProductDto) {
     return this.productModel.create(product);
   }
 
-  async edit(_id: string, editData: any) {
-    return this.productModel.findByIdAndUpdate(_id, editData);
+  async edit(id: string, editData: any) {
+    return this.productModel.findByIdAndUpdate(id, editData);
   }
 
-  async remove() {
-    return [];
+  async remove(id: string) {
+    return this.productModel.findByIdAndDelete(id);
   }
 }

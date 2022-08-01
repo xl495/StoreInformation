@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AddProductDto } from './dto/add-product.dto';
 import { EditProductDto } from './dto/edit-product.dto';
@@ -12,8 +20,8 @@ export class ShopProductController {
     summary: '获取商品详情',
   })
   @Get()
-  async getDetail() {
-    return [];
+  async getDetail(@Query('id') id: string) {
+    return this.productService.getDetail(id);
   }
 
   @ApiOperation({
@@ -37,7 +45,7 @@ export class ShopProductController {
     summary: '删除商品',
   })
   @Delete()
-  async remove() {
-    return [];
+  async remove(@Query('id') id: string) {
+    return this.productService.remove(id);
   }
 }
